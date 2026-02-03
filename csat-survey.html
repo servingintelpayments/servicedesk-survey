@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Feedback Survey</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .survey-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .survey-header {
+            background: #0078d4;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .survey-header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .survey-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .case-info {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+        
+        .survey-body {
+            padding: 30px;
+        }
+        
+        .question {
+            margin-bottom: 30px;
+        }
+        
+        .question:last-of-type {
+            margin-bottom: 20px;
+        }
+        
+        .question label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        
+        .required::after {
+            content: ' *';
+            color: #e74c3c;
+        }
+        
+        /* Star Rating */
+        .star-rating {
+            display: flex;
+            gap: 8px;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        
+        .star-rating input {
+            display: none;
+        }
+        
+        .star-rating label {
+            cursor: pointer;
+            font-size: 36px;
+            color: #ddd;
+            transition: color 0.2s;
+            margin-bottom: 0;
+        }
+        
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #f1c40f;
+        }
+        
+        /* Emoji Rating Alternative */
+        .emoji-rating {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        .emoji-rating input {
+            display: none;
+        }
+        
+        .emoji-rating label {
+            cursor: pointer;
+            font-size: 40px;
+            padding: 10px;
+            border-radius: 12px;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+            text-align: center;
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .emoji-rating label:hover {
+            background: #f0f0f0;
+        }
+        
+        .emoji-rating input:checked + label {
+            border-color: #0078d4;
+            background: #e6f2ff;
+        }
+        
+        .emoji-rating .rating-label {
+            display: block;
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Radio Options */
+        .radio-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .radio-option:hover {
+            border-color: #0078d4;
+            background: #f8f9fa;
+        }
+        
+        .radio-option input {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            accent-color: #0078d4;
+        }
+        
+        .radio-option input:checked + span {
+            font-weight: 600;
+            color: #0078d4;
+        }
+        
+        /* Textarea */
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.2s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #0078d4;
+        }
+        
+        textarea::placeholder {
+            color: #999;
+        }
+        
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .submit-btn:hover {
+            background: #006cbe;
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        /* Loading State */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0078d4;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Success State */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 60px 30px;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #27ae60;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+        
+        .success-message h2 {
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+        
+        .success-message p {
+            color: #666;
+        }
+        
+        /* Error State */
+        .error-message {
+            display: none;
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .survey-header {
+                padding: 20px;
+            }
+            
+            .survey-body {
+                padding: 20px;
+            }
+            
+            .emoji-rating label {
+                font-size: 30px;
+                padding: 8px;
+            }
+            
+            .emoji-rating .rating-label {
+                font-size: 9px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="survey-container">
+        <div class="survey-header">
+            <!-- Replace with your logo -->
+            <!-- <img src="your-logo.png" alt="Logo" style="height: 40px; margin-bottom: 15px;"> -->
+            <h1>How was your experience?</h1>
+            <p>Your feedback helps us improve our service</p>
+            <div class="case-info">
+                Case #<span id="caseNumber">Loading...</span>
+            </div>
+        </div>
+        
+        <div class="survey-body">
+            <form id="surveyForm">
+                <div class="error-message" id="errorMessage"></div>
+                
+                <!-- Question 1: Overall Satisfaction (Emoji Rating) -->
+                <div class="question">
+                    <label class="required">How satisfied are you with our support?</label>
+                    <div class="emoji-rating">
+                        <input type="radio" name="satisfaction" id="sat1" value="1">
+                        <label for="sat1">
+                            😞
+                            <span class="rating-label">Very Dissatisfied</span>
+                        </label>
+                        
+                        <input type="radio" name="satisfaction" id="sat2" value="2">
+                        <label for="sat2">
+                            😕
+                            <span class="rating-label">Dissatisfied</span>
+                        </label>
+                        
+                        <input type="radio" name="satisfaction" id="sat3" value="3">
+                        <label for="sat3">
+                            😐
+                            <span class="rating-label">Neutral</span>
+                        </label>
+                        
+                        <input type="radio" name="satisfaction" id="sat4" value="4">
+                        <label for="sat4">
+                            🙂
+                            <span class="rating-label">Satisfied</span>
+                        </label>
+                        
+                        <input type="radio" name="satisfaction" id="sat5" value="5">
+                        <label for="sat5">
+                            😃
+                            <span class="rating-label">Very Satisfied</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Question 2: Issue Resolved -->
+                <div class="question">
+                    <label class="required">Was your issue resolved?</label>
+                    <div class="radio-options">
+                        <label class="radio-option">
+                            <input type="radio" name="resolved" value="yes">
+                            <span>Yes, completely</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="resolved" value="partial">
+                            <span>Yes, partially</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="resolved" value="no">
+                            <span>No, not resolved</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Question 3: Agent Rating (Star Rating) -->
+                <div class="question">
+                    <label>How would you rate your support agent?</label>
+                    <div class="star-rating">
+                        <input type="radio" name="agentRating" id="star5" value="5">
+                        <label for="star5">★</label>
+                        
+                        <input type="radio" name="agentRating" id="star4" value="4">
+                        <label for="star4">★</label>
+                        
+                        <input type="radio" name="agentRating" id="star3" value="3">
+                        <label for="star3">★</label>
+                        
+                        <input type="radio" name="agentRating" id="star2" value="2">
+                        <label for="star2">★</label>
+                        
+                        <input type="radio" name="agentRating" id="star1" value="1">
+                        <label for="star1">★</label>
+                    </div>
+                </div>
+                
+                <!-- Question 4: Comments -->
+                <div class="question">
+                    <label>Any additional comments or suggestions?</label>
+                    <textarea name="comments" id="comments" placeholder="Tell us what we did well or how we can improve..."></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submitBtn">Submit Feedback</button>
+            </form>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Submitting your feedback...</p>
+            </div>
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            <div class="success-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+            </div>
+            <h2>Thank You!</h2>
+            <p>Your feedback has been submitted successfully.<br>We appreciate you taking the time to help us improve.</p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // CONFIGURATION - UPDATE THESE VALUES
+        // ============================================================
+        
+        // Replace with your Power Automate HTTP trigger URL
+        const POWER_AUTOMATE_URL = 'YOUR_POWER_AUTOMATE_HTTP_TRIGGER_URL_HERE';
+        
+        // ============================================================
+        // DO NOT MODIFY BELOW THIS LINE
+        // ============================================================
+        
+        // Get parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const caseId = urlParams.get('caseId') || urlParams.get('caseid');
+        const caseNumber = urlParams.get('caseNumber') || urlParams.get('casenumber') || 'N/A';
+        const customerName = urlParams.get('customerName') || urlParams.get('customername') || '';
+        
+        // Display case number
+        document.getElementById('caseNumber').textContent = caseNumber;
+        
+        // Form elements
+        const form = document.getElementById('surveyForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        
+        // Handle form submission
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Validate required fields
+            const satisfaction = document.querySelector('input[name="satisfaction"]:checked');
+            const resolved = document.querySelector('input[name="resolved"]:checked');
+            
+            if (!satisfaction) {
+                showError('Please rate your satisfaction level.');
+                return;
+            }
+            
+            if (!resolved) {
+                showError('Please indicate if your issue was resolved.');
+                return;
+            }
+            
+            // Get optional fields
+            const agentRating = document.querySelector('input[name="agentRating"]:checked');
+            const comments = document.getElementById('comments').value.trim();
+            
+            // Prepare data
+            const surveyData = {
+                caseId: caseId,
+                caseNumber: caseNumber,
+                csatScore: parseInt(satisfaction.value),
+                issueResolved: resolved.value,
+                agentRating: agentRating ? parseInt(agentRating.value) : null,
+                comments: comments,
+                submittedAt: new Date().toISOString(),
+                userAgent: navigator.userAgent
+            };
+            
+            // Show loading state
+            form.style.display = 'none';
+            loading.style.display = 'block';
+            errorMessage.style.display = 'none';
+            
+            try {
+                // Submit to Power Automate
+                const response = await fetch(POWER_AUTOMATE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(surveyData)
+                });
+                
+                if (response.ok) {
+                    // Show success message
+                    loading.style.display = 'none';
+                    successMessage.style.display = 'block';
+                } else {
+                    throw new Error('Server returned an error');
+                }
+            } catch (error) {
+                // Show error and restore form
+                loading.style.display = 'none';
+                form.style.display = 'block';
+                showError('Failed to submit feedback. Please try again.');
+                console.error('Survey submission error:', error);
+            }
+        });
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            errorMessage.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Check if caseId is provided
+        if (!caseId) {
+            document.querySelector('.survey-body').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <h3 style="color: #e74c3c; margin-bottom: 10px;">Invalid Survey Link</h3>
+                    <p style="color: #666;">This survey link appears to be invalid or expired.<br>Please contact support if you need assistance.</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

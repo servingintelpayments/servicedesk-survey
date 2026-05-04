@@ -54,24 +54,6 @@
             margin-top: 15px;
             font-size: 13px;
         }
-
-        /* NEW APP PROMO STYLE - NO CODE BROKEN */
-        .app-promo-box {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px dashed rgba(255, 255, 255, 0.4);
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 13px;
-            line-height: 1.4;
-            text-align: center;
-        }
-        
-        .app-promo-box a {
-            color: #ffffff;
-            font-weight: bold;
-            text-decoration: underline;
-        }
         
         .survey-body {
             padding: 30px;
@@ -333,16 +315,12 @@
 <body>
     <div class="survey-container">
         <div class="survey-header">
+            <!-- Replace with your logo -->
+            <!-- <img src="your-logo.png" alt="Logo" style="height: 40px; margin-bottom: 15px;"> -->
             <h1>How was your experience?</h1>
             <p>Your feedback helps us improve our service</p>
             <div class="case-info">
                 Case #<span id="caseNumber">Loading...</span>
-            </div>
-
-            <div class="app-promo-box">
-                We have a new app! You can now <strong>submit</strong> new tickets or <strong>follow up</strong> on existing ones. 
-                <br>
-                <a href="https://lively-ocean-0b181f410.7.azurestaticapps.net/" target="_blank">Access the Support Portal Here</a>
             </div>
         </div>
         
@@ -350,6 +328,7 @@
             <form id="surveyForm">
                 <div class="error-message" id="errorMessage"></div>
                 
+                <!-- Question 1: Overall Satisfaction (Emoji Rating) -->
                 <div class="question">
                     <label class="required">How satisfied are you with our support?</label>
                     <div class="emoji-rating">
@@ -385,6 +364,7 @@
                     </div>
                 </div>
                 
+                <!-- Question 2: Issue Resolved -->
                 <div class="question">
                     <label class="required">Was your issue resolved?</label>
                     <div class="radio-options">
@@ -403,6 +383,7 @@
                     </div>
                 </div>
                 
+                <!-- Question 3: Agent Rating (Star Rating) -->
                 <div class="question">
                     <label>How would you rate your support agent?</label>
                     <div class="star-rating">
@@ -423,6 +404,7 @@
                     </div>
                 </div>
                 
+                <!-- Question 4: Comments -->
                 <div class="question">
                     <label>Any additional comments or suggestions?</label>
                     <textarea name="comments" id="comments" placeholder="Tell us what we did well or how we can improve..."></textarea>
@@ -449,24 +431,38 @@
     </div>
 
     <script>
+        // ============================================================
+        // CONFIGURATION - UPDATE THESE VALUES
+        // ============================================================
+        
+        // Replace with your Power Automate HTTP trigger URL
         const POWER_AUTOMATE_URL = 'https://0cbdd4b906deeaffb33fb6cd7fc4c6.03.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2eb2f3bf8990481697f4938e72662b4e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=9y4VtZgP5Y7AMD906GvjTPxBuYYxRmWNeZ3qjXVeU0E';
         
+        // ============================================================
+        // DO NOT MODIFY BELOW THIS LINE
+        // ============================================================
+        
+        // Get parameters from URL
         const urlParams = new URLSearchParams(window.location.search);
         const caseId = urlParams.get('caseId') || urlParams.get('caseid');
         const caseNumber = urlParams.get('caseNumber') || urlParams.get('casenumber') || 'N/A';
         const customerName = urlParams.get('customerName') || urlParams.get('customername') || '';
         
+        // Display case number
         document.getElementById('caseNumber').textContent = caseNumber;
         
+        // Form elements
         const form = document.getElementById('surveyForm');
         const submitBtn = document.getElementById('submitBtn');
         const loading = document.getElementById('loading');
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
         
+        // Handle form submission
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            // Validate required fields
             const satisfaction = document.querySelector('input[name="satisfaction"]:checked');
             const resolved = document.querySelector('input[name="resolved"]:checked');
             
@@ -480,9 +476,11 @@
                 return;
             }
             
+            // Get optional fields
             const agentRating = document.querySelector('input[name="agentRating"]:checked');
             const comments = document.getElementById('comments').value.trim();
             
+            // Prepare data
             const surveyData = {
                 caseId: caseId,
                 caseNumber: caseNumber,
@@ -494,11 +492,13 @@
                 userAgent: navigator.userAgent
             };
             
+            // Show loading state
             form.style.display = 'none';
             loading.style.display = 'block';
             errorMessage.style.display = 'none';
             
             try {
+                // Submit to Power Automate
                 const response = await fetch(POWER_AUTOMATE_URL, {
                     method: 'POST',
                     headers: {
@@ -508,12 +508,14 @@
                 });
                 
                 if (response.ok) {
+                    // Show success message
                     loading.style.display = 'none';
                     successMessage.style.display = 'block';
                 } else {
                     throw new Error('Server returned an error');
                 }
             } catch (error) {
+                // Show error and restore form
                 loading.style.display = 'none';
                 form.style.display = 'block';
                 showError('Failed to submit feedback. Please try again.');
@@ -527,6 +529,7 @@
             errorMessage.scrollIntoView({ behavior: 'smooth' });
         }
         
+        // Check if caseId is provided
         if (!caseId) {
             document.querySelector('.survey-body').innerHTML = `
                 <div style="text-align: center; padding: 40px;">

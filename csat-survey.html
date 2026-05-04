@@ -54,6 +54,24 @@
             margin-top: 15px;
             font-size: 13px;
         }
+
+        /* STYLES FOR THE APP PORTAL NOTIFICATION */
+        .app-portal-notice {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px dashed rgba(255, 255, 255, 0.4);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 13px;
+            line-height: 1.4;
+            text-align: center;
+        }
+        
+        .app-portal-notice a {
+            color: #ffffff;
+            font-weight: bold;
+            text-decoration: underline;
+        }
         
         .survey-body {
             padding: 30px;
@@ -315,12 +333,16 @@
 <body>
     <div class="survey-container">
         <div class="survey-header">
-            <!-- Replace with your logo -->
-            <!-- <img src="your-logo.png" alt="Logo" style="height: 40px; margin-bottom: 15px;"> -->
             <h1>How was your experience?</h1>
             <p>Your feedback helps us improve our service</p>
             <div class="case-info">
                 Case #<span id="caseNumber">Loading...</span>
+            </div>
+
+            <div class="app-portal-notice">
+                We have a new app! You can now <strong>submit</strong> new tickets or <strong>follow up</strong> on existing ones.
+                <br>
+                <a href="https://lively-ocean-0b181f410.7.azurestaticapps.net/" target="_blank">Access the Support Portal Here</a>
             </div>
         </div>
         
@@ -328,7 +350,6 @@
             <form id="surveyForm">
                 <div class="error-message" id="errorMessage"></div>
                 
-                <!-- Question 1: Overall Satisfaction (Emoji Rating) -->
                 <div class="question">
                     <label class="required">How satisfied are you with our support?</label>
                     <div class="emoji-rating">
@@ -364,7 +385,6 @@
                     </div>
                 </div>
                 
-                <!-- Question 2: Issue Resolved -->
                 <div class="question">
                     <label class="required">Was your issue resolved?</label>
                     <div class="radio-options">
@@ -383,7 +403,6 @@
                     </div>
                 </div>
                 
-                <!-- Question 3: Agent Rating (Star Rating) -->
                 <div class="question">
                     <label>How would you rate your support agent?</label>
                     <div class="star-rating">
@@ -404,7 +423,6 @@
                     </div>
                 </div>
                 
-                <!-- Question 4: Comments -->
                 <div class="question">
                     <label>Any additional comments or suggestions?</label>
                     <textarea name="comments" id="comments" placeholder="Tell us what we did well or how we can improve..."></textarea>
